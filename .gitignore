@@ -1,0 +1,19 @@
+venv/
+__pycache__/
+.pytest_cache/
+.env
+data/
+*.mp4
+*.avi
+*.mov
+
+*.pt
+*.pth
+
+output/
+runs/
+logs/
+.env
+*.db
+git add .
+git commit -m "Initial project structure"

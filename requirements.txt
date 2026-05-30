@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary
+pydantic
+opencv-python
+ultralytics
+numpy
+pandas
+shapely
+pytest
+pytest-cov
+streamlit
+python-dotenv
