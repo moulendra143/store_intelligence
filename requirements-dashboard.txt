@@ -1,0 +1,10 @@
+# ── Streamlit Live Dashboard ─────────────────────────────────────────
+# Install with: pip install -r requirements-dashboard.txt
+# Docker target: api-dashboard
+
+streamlit
+pandas
+plotly
+requests
+python-dotenv
+watchdog
