@@ -1,0 +1,23 @@
+# Dockerfile.dashboard — Lightweight Streamlit dashboard image for Render.com
+# Does NOT include the heavy CV/ML pipeline dependencies.
+# Render injects a PORT environment variable; Streamlit reads it via shell expansion.
+
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install only the dashboard dependencies (~150 MB)
+COPY requirements-dashboard.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements-dashboard.txt
+
+# Copy dashboard source and data directory
+COPY dashboard/ ./dashboard/
+COPY data/ ./data/
+
+RUN mkdir -p /app/data
+
+EXPOSE 8501
+
+# Render sets $PORT dynamically — Streamlit must bind to it
+CMD ["sh", "-c", "streamlit run dashboard/app.py --server.port=${PORT:-8501} --server.address=0.0.0.0 --server.headless=true"]
