@@ -109,11 +109,23 @@ def load_events_local(filepath: str, store_id: str) -> list[dict]:
 # SIDEBAR
 # ─────────────────────────────────────────────────────────────────
 
+health = api_get("/health")
+default_store_id = STORE_ID
+if health and "stores" in health and health["stores"]:
+    active_stores = list(health["stores"].keys())
+    if default_store_id not in active_stores:
+        if "ST1076" in active_stores:
+            default_store_id = "ST1076"
+        elif "store_1076" in active_stores:
+            default_store_id = "store_1076"
+        else:
+            default_store_id = active_stores[0]
+
 with st.sidebar:
     st.markdown("## 🏪 Store Intelligence")
     st.markdown("---")
 
-    store_id = st.text_input("Store ID", value=STORE_ID)
+    store_id = st.text_input("Store ID", value=default_store_id)
     window_hours = st.slider("Time Window (hours)", 1, 48, 24)
     auto_refresh = st.toggle("Auto Refresh", value=True)
     refresh_interval = st.select_slider("Refresh Every", options=[5, 10, 30, 60], value=REFRESH_SECONDS)
@@ -121,7 +133,6 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("**API Status**")
 
-    health = api_get("/health")
     if health and (health.get("status") in ("healthy", "warning") or health.get("database") == "online"):
         st.success("🟢 API Online")
     else:

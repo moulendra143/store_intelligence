@@ -458,8 +458,14 @@ def _update_visitor_session(db: Session, event: EventInSchema, ts: datetime):
         elif event.event_type == "EXIT":
             session_row.exit_time = ts
             if session_row.entry_time:
+                entry_ts = session_row.entry_time
+                exit_ts = ts
+                if entry_ts.tzinfo is None and exit_ts.tzinfo is not None:
+                    entry_ts = entry_ts.replace(tzinfo=timezone.utc)
+                elif entry_ts.tzinfo is not None and exit_ts.tzinfo is None:
+                    exit_ts = exit_ts.replace(tzinfo=timezone.utc)
                 session_row.dwell_seconds = int(
-                    (ts - session_row.entry_time).total_seconds()
+                    (exit_ts - entry_ts).total_seconds()
                 )
 
         elif event.event_type in ("ZONE_ENTER", "ZONE_DWELL", "BILLING_QUEUE_JOIN"):

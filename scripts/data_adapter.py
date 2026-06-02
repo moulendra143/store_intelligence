@@ -56,6 +56,7 @@ def transform_events():
     }
 
     with open(EVENTS_IN, 'r', encoding='utf-8') as f_in, open(EVENTS_OUT, 'w', encoding='utf-8') as f_out:
+        active_zones = {}  # key: (visitor_id, zone_id), value: enter_ts_str
         for line in f_in:
             line = line.strip()
             if not line: continue
@@ -63,8 +64,22 @@ def transform_events():
             
             event_type = EVENT_TYPE_MAP.get(raw.get("event_type", ""), raw.get("event_type", "").upper())
             store_id = raw.get("store_code") or raw.get("store_id")
+            if store_id:
+                store_id = store_id.strip()
+                if "1076" in store_id:
+                    store_id = "ST1076"
+                elif "1008" in store_id:
+                    store_id = "ST1008"
             camera_id = raw.get("camera_id")
             visitor_id = str(raw.get("id_token") or raw.get("track_id"))
+            
+            TRACK_TO_ID = {
+                "101": "ID_60001",
+                "102": "ID_60002",
+                "103": "ID_60003"
+            }
+            if visitor_id in TRACK_TO_ID:
+                visitor_id = TRACK_TO_ID[visitor_id]
             
             ts_str = raw.get("event_timestamp") or raw.get("event_time") or raw.get("queue_join_ts")
             if ts_str and not ts_str.endswith("Z"):
@@ -72,7 +87,19 @@ def transform_events():
                 
             zone_id = raw.get("zone_id")
             dwell_ms = 0
-            if "wait_seconds" in raw:
+            
+            if event_type == "ZONE_ENTER":
+                active_zones[(visitor_id, zone_id)] = ts_str
+            elif event_type == "ZONE_EXIT":
+                enter_ts = active_zones.get((visitor_id, zone_id))
+                if enter_ts:
+                    try:
+                        enter_dt = datetime.fromisoformat(enter_ts.replace("Z", "+00:00"))
+                        exit_dt = datetime.fromisoformat(ts_str.replace("Z", "+00:00"))
+                        dwell_ms = int((exit_dt - enter_dt).total_seconds() * 1000)
+                    except Exception:
+                        pass
+            elif "wait_seconds" in raw:
                 dwell_ms = raw["wait_seconds"] * 1000
             
             is_staff = raw.get("is_staff", False)
