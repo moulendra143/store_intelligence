@@ -15,6 +15,7 @@ docker compose up --build
 
 The API is now live at **http://localhost:8000**.  
 Interactive API docs: **http://localhost:8000/docs**
+Live Real-Time Dashboard: **http://localhost:8501**
 
 > If you have pre-existing `data/events.jsonl` the API loads it automatically on startup.
 

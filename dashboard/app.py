@@ -139,6 +139,18 @@ with st.sidebar:
 # ─────────────────────────────────────────────────────────────────
 
 end_dt = datetime.now(timezone.utc)
+if health and "stores" in health and store_id in health["stores"]:
+    last_ts_str = health["stores"][store_id].get("last_event_timestamp")
+    if last_ts_str:
+        try:
+            if last_ts_str.endswith("Z"):
+                last_ts_str = last_ts_str[:-1]
+                if not last_ts_str.endswith("+00:00"):
+                    last_ts_str += "+00:00"
+            end_dt = datetime.fromisoformat(last_ts_str)
+        except ValueError:
+            pass
+
 start_dt = end_dt - timedelta(hours=window_hours)
 
 metrics = api_get("/metrics", {"store_id": store_id, "start": start_dt.isoformat(), "end": end_dt.isoformat()})

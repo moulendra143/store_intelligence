@@ -1,19 +1,43 @@
+# Virtual Environment
 venv/
+.venv/
+
+# Python
 __pycache__/
+*.pyc
 .pytest_cache/
+
+# Environment Variables
 .env
-data/
+
+# Data
+data/raw_videos/
+data/output_events/
+data/temp/
+
+# Generated files
 *.mp4
 *.avi
 *.mov
+*.log
 
+# Model files
 *.pt
 *.pth
 
+# Database
+*.db
+
+# Output folders
 output/
 runs/
 logs/
-.env
-*.db
-git add .
-git commit -m "Initial project structure"
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Keep important sample files
+!data/sample_events.jsonl
+!data/store_layout.json
+!data/pos_transactions.csvs

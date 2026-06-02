@@ -45,3 +45,22 @@ services:
   #     api:
   #       condition: service_healthy
   #   restart: "no"   # one-shot — exits after processing all videos
+
+  # --- Live Streamlit Dashboard ------------------------------------
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: store_intelligence_dashboard
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - API_URL=http://api:8000
+      - STORE_ID=ST1008
+    command: streamlit run dashboard/app.py --server.port=8501 --server.address=0.0.0.0
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
