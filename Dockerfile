@@ -25,7 +25,7 @@ RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements-api.txt && \
     pip install --no-cache-dir -r requirements-dashboard.txt && \
     pip install --no-cache-dir -r requirements-pipeline.txt && \
-    pip install --no-cache-dir -r requirements-dev.txt
+    pip install --no-cache-dir -r requirements-dev.txt && pip install --no-cache-dir uvicorn
 
 # ------------------------------------------------------------
 # Final image – copy source and compiled dependencies.
@@ -37,15 +37,11 @@ WORKDIR /app
 # Bring in compiled wheels from the build stage.
 COPY --from=build /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 
-# Copy application code.
-COPY app ./app
-COPY dashboard ./dashboard
-COPY pipeline ./pipeline
-COPY data ./data
+# Re‑install uvicorn in the final image so the executable script is available.
+RUN pip install --no-cache-dir uvicorn
 
-# Ensure the data directory exists (SQLite will store its DB here).
-RUN mkdir -p /app/data
-
+# Expose ports for FastAPI (8000) and Streamlit dashboard (8501)
 EXPOSE 8000 8501
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Use the module form of uvicorn to avoid relying on a PATH lookup.
+CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

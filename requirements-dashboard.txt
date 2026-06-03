@@ -8,3 +8,4 @@ plotly
 requests
 python-dotenv
 watchdog
+
