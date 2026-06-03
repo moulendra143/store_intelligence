@@ -1,0 +1,26 @@
+[
+  {
+    "store_id": "ST1008",
+    "name": "Store 1",
+    "zones": [
+      {"zone_id": "FRAGRANCE", "name": "Fragrance"},
+      {"zone_id": "NAIL_UNIT", "name": "Nail Unit"},
+      {"zone_id": "MAKEUP", "name": "Makeup"},
+      {"zone_id": "FOH", "name": "Front of House"},
+      {"zone_id": "SKINCARE", "name": "Skincare"},
+      {"zone_id": "HAIRCARE", "name": "Haircare"},
+      {"zone_id": "BILLING", "name": "Billing Counter"}
+    ]
+  },
+  {
+    "store_id": "ST1076",
+    "name": "Store 2",
+    "zones": [
+      {"zone_id": "WALL_SHELF", "name": "Wall Shelf"},
+      {"zone_id": "MAKEUP", "name": "Makeup"},
+      {"zone_id": "FOH", "name": "Front of House"},
+      {"zone_id": "BOH", "name": "Back of House"},
+      {"zone_id": "BILLING", "name": "Billing Counter"}
+    ]
+  }
+]

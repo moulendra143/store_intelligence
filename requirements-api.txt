@@ -1,0 +1,11 @@
+# ── FastAPI Backend Service ──────────────────────────────────────────
+# Install with: pip install -r requirements-api.txt
+# Docker target: api-dashboard
+
+fastapi
+uvicorn[standard]
+sqlalchemy
+psycopg2-binary
+pydantic
+python-dotenv
+python-multipart

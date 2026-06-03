@@ -1,0 +1,12 @@
+# ── Combined reference (for local full-environment setup) ─────────────
+# For Docker, each service installs only its own requirements file.
+# To install everything locally (e.g., for development):
+#   pip install -r requirements.txt
+#
+# ⚠️  ultralytics pulls in PyTorch (~2.5 GB) — only install if you
+#    plan to run pipeline/run.py against video clips locally.
+
+-r requirements-api.txt
+-r requirements-dashboard.txt
+-r requirements-pipeline.txt
+-r requirements-dev.txt

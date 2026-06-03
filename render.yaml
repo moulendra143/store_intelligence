@@ -1,0 +1,45 @@
+# render.yaml — Render.com Blueprint
+#
+# Deploys two services from this repo:
+#   1. store-intelligence-api       → FastAPI backend  (port auto-assigned by Render)
+#   2. store-intelligence-dashboard → Streamlit UI     (port auto-assigned by Render)
+#
+# How to deploy:
+#   1. Push this repo to GitHub
+#   2. Go to https://dashboard.render.com/blueprints
+#   3. Click "New Blueprint Instance" → connect this repo
+#   4. Render will read this file and deploy both services automatically
+
+services:
+
+  # ── FastAPI Backend ──────────────────────────────────────────────
+  - type: web
+    name: store-intelligence-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile.render
+    dockerContext: .
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:////app/data/store_intelligence.db
+      - key: EVENTS_FILE
+        value: /app/data/events.jsonl
+      - key: POS_FILE
+        value: /app/data/pos_transactions.csv
+
+  # ── Streamlit Live Dashboard ─────────────────────────────────────
+  - type: web
+    name: store-intelligence-dashboard
+    runtime: docker
+    dockerfilePath: ./Dockerfile.dashboard
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: API_URL
+        # Render service URLs follow the pattern: https://<name>.onrender.com
+        value: https://store-intelligence-api.onrender.com
+      - key: STORE_ID
+        value: STORE_BLR_002
+      - key: REFRESH_SECONDS
+        value: "10"

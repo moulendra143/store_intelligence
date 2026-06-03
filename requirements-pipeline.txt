@@ -1,0 +1,13 @@
+# ── Computer Vision / YOLOv8 Detection Pipeline ──────────────────────
+# ⚠️  WARNING: This installs PyTorch + torchvision (~2.5 GB).
+# Only install this if you are running pipeline/run.py against video clips.
+# Install with: pip install -r requirements-pipeline.txt
+# Docker target: pipeline
+
+opencv-python-headless
+ultralytics==8.4.60
+numpy
+pandas
+shapely
+requests
+python-dotenv

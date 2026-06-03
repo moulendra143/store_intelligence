@@ -1,0 +1,31 @@
+# Dockerfile.render — Lightweight FastAPI image for Render.com
+#
+# Does NOT include the CV/YOLO pipeline (opencv, ultralytics, PyTorch).
+# The pipeline runs locally against video clips and is not needed on Render.
+#
+# Render injects a PORT environment variable; we pick it up via shell expansion.
+
+FROM python:3.11-slim
+
+# curl is needed for the healthcheck
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Install only the lightweight API dependencies (~40 MB)
+COPY requirements-api.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements-api.txt
+
+# Copy application code
+COPY app/ ./app/
+COPY data/ ./data/
+
+# Writable data directory for SQLite DB and events file
+RUN mkdir -p /app/data
+
+EXPOSE 8000
+
+# Render sets $PORT dynamically — fall back to 8000 for local use
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 1"]

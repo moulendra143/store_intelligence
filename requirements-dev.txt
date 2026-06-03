@@ -1,0 +1,7 @@
+# ── Development / Testing Only ────────────────────────────────────────
+# Install with: pip install -r requirements-dev.txt
+# Not included in any Docker image.
+
+pytest
+pytest-cov
+httpx
