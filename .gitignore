@@ -5,39 +5,60 @@ venv/
 # Python
 __pycache__/
 *.pyc
+*.pyo
 .pytest_cache/
 
 # Environment Variables
 .env
 
-# Data
+# ─────────────────────────────────────────
+# DATA DIRECTORY — not committed to repo
+# Dataset files must be sourced from the
+# challenge organiser (per licence terms).
+# ─────────────────────────────────────────
+data/videos/
 data/raw_videos/
 data/output_events/
 data/temp/
 
-# Generated files
+# Individual dataset files
+data/pos_transactions.csv
+data/store_layout.json
+data/sample_events.jsonl
+data/events.jsonl
+data/store_intelligence.db
+
+# Layout images (large PNG files)
+data/*.png
+data/*.jpg
+
+# Video formats (challenge licence — do not redistribute)
 *.mp4
 *.avi
 *.mov
-*.log
+*.mkv
+*.mkv
 
-# Model files
+# ─────────────────────────────────────────
+# Generated / build artefacts
+# ─────────────────────────────────────────
+*.log
+*.db
 *.pt
 *.pth
-
-# Database
-*.db
 
 # Output folders
 output/
 runs/
 logs/
+dist/
+build/
+*.egg-info/
+
+# Coverage
+.coverage
+htmlcov/
 
 # OS files
 .DS_Store
 Thumbs.db
-
-# Keep important sample files
-!data/sample_events.jsonl
-!data/store_layout.json
-!data/pos_transactions.csvs
