@@ -55,11 +55,33 @@ def get_db():
 
 
 def init_db():
-    """Create all tables. Called on API startup."""
+    """Initialize the database tables, ensuring the SQLite directory exists.
+
+    For SQLite databases we need to make sure the directory for the database file
+    exists. The ``DATABASE_URL`` environment variable can be either a relative path
+    (e.g. ``sqlite:///./data/store_intelligence.db``) or an absolute path with
+    four slashes (e.g. ``sqlite:////app/data/store_intelligence.db``). We parse the
+    file component from the URL and create the parent directory if it does not
+    already exist.
+    """
     import os
-    os.makedirs("data", exist_ok=True)
-    # Import models to register them with Base
-    from app.models import StoreEvent, POSTransaction, VisitorSession  # noqa: F401
+    from urllib.parse import urlparse
+
+    if DATABASE_URL.startswith("sqlite"):
+        # Strip the ``sqlite:///`` prefix to get the filesystem path.
+        # ``urlparse`` reliably handles the different numbers of slashes.
+        parsed = urlparse(DATABASE_URL)
+        # The path component may start with a leading slash for absolute paths.
+        db_path = parsed.path
+        # Remove leading '/' added by urlparse for relative paths like '///./data/...'
+        if db_path.startswith("///"):
+            db_path = db_path[2:]
+        # Ensure we have a proper directory path.
+        dir_path = os.path.dirname(db_path)
+        if dir_path:
+            os.makedirs(dir_path, exist_ok=True)
+
+    from app.models import StoreEvent, POSTransaction, VisitorSession
     Base.metadata.create_all(bind=engine)
 
 

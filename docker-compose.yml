@@ -1,66 +1,85 @@
-version: "3.9"
+
 
 services:
-  # ─── FastAPI Intelligence API ─────────────────────────────────────
+
   api:
     build:
       context: .
       dockerfile: Dockerfile
+
+    image: store-intelligence:latest
     container_name: store_intelligence_api
+
     ports:
       - "8000:8000"
+
     volumes:
-      - ./data:/app/data          # shared data directory (events JSONL, SQLite DB)
+      - store_intel_data:/app/data
+
     environment:
-      - DATABASE_URL=sqlite:////app/data/store_intelligence.db
-      - EVENTS_FILE=/app/data/events.jsonl
-      - POS_FILE=/app/data/pos_transactions.csv
+      DATABASE_URL: "sqlite:////app/data/store_intelligence.db"
+      EVENTS_FILE: "/app/data/events.jsonl"
+      POS_FILE: "/app/data/pos_transactions.csv"
+
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 30s
+
     restart: unless-stopped
 
-  # ─── Live Streamlit Dashboard ────────────────────────────────────
   dashboard:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: store-intelligence:latest
     container_name: store_intelligence_dashboard
+
     ports:
       - "8501:8501"
+
     volumes:
-      - ./data:/app/data
+      - store_intel_data:/app/data
+
     environment:
-      - API_URL=http://api:8000
-      - STORE_ID=ST1008
-    command: streamlit run dashboard/app.py --server.port=8501 --server.address=0.0.0.0
+      API_URL: "http://api:8000"
+      STORE_ID: "ST1008"
+
+    command: >
+      streamlit run dashboard/app.py
+      --server.port=8501
+      --server.address=0.0.0.0
+
     depends_on:
       api:
         condition: service_healthy
+
     restart: unless-stopped
 
-  # ─── Detection Pipeline (one-shot video processor) ───────────────
-  # Uncomment when video clips are placed in ./data/
-  #
-  # pipeline:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   container_name: store_intelligence_pipeline
-  #   volumes:
-  #     - ./data:/app/data
-  #   environment:
-  #     - STORE_ID=STORE_BLR_002
-  #   command: >
-  #     python pipeline/run.py
-  #       --store STORE_BLR_002
-  #       --data-dir /app/data
-  #       --output /app/data/events.jsonl
-  #       --post-to-api http://api:8000
-  #   depends_on:
-  #     api:
-  #       condition: service_healthy
-  #   restart: "no"   # one-shot — exits after processing all videos
+# Uncomment if needed
+
+#  pipeline:
+#    image: store-intelligence:latest
+#    container_name: store_intelligence_pipeline
+#
+#    volumes:
+#      - ./data:/app/data
+#
+#    environment:
+#      STORE_ID: "STORE_BLR_002"
+#
+#    command: >
+#      python pipeline/run.py
+#      --store STORE_BLR_002
+#      --data-dir /app/data
+#      --output /app/data/events.jsonl
+#      --post-to-api http://api:8000
+#
+#    depends_on:
+#      api:
+#        condition: service_healthy
+#
+#    restart: "no"
+
+volumes:
+  store_intel_data:
+    driver: local

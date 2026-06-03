@@ -5,7 +5,7 @@
 # Docker target: pipeline
 
 opencv-python-headless
-ultralytics
+ultralytics==8.4.60
 numpy
 pandas
 shapely
