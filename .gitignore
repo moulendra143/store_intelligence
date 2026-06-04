@@ -40,4 +40,4 @@ Thumbs.db
 # Keep important sample files
 !data/sample_events.jsonl
 !data/store_layout.json
-!data/pos_transactions.csvs
+!data/pos_transactions.csv
